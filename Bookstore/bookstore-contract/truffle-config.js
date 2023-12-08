@@ -45,6 +45,12 @@
 // const { MNEMONIC, PROJECT_ID } = process.env;
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
+require("dotenv").config
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+//const { INFURA_API_KEY, MNEMONIC } = process.env;
+//const fs = require('fs');
+const MNEMONIC = process.env.MNEMONIC;
+const INFURA_URL = process.env.INFURA_URL;
 
 module.exports = {
   /**
@@ -68,6 +74,12 @@ module.exports = {
      host: "127.0.0.1",     // Localhost (default: none)
      port: 7545,            // Standard Ethereum port (default: none)
      network_id: "5777",       // Any network (default: none)
+    },
+    sepolia: {
+      provider: () => new HDWalletProvider(MNEMONIC, INFURA_URL),
+      network_id: "11155111",
+      gas: 4465030,
+      confirmations:  2
     },
     //
     // An additional network, but with some advanced options…

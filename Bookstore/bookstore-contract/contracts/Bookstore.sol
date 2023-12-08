@@ -9,6 +9,7 @@ contract Bookstore{
         mapping (bytes32 => uint[]) unlockedChapters; //Unlocked Chapters for Book A
         bool isAdmin;
         uint balance; //Balance in wei, convert to ether
+        bool banned;
     }
 
     struct Chapter{
@@ -45,6 +46,10 @@ contract Bookstore{
         require( accountOwnership[msg.sender].isAdmin == true);
         _;
     }
+    modifier isNotBanned(){
+        require (accountOwnership[msg.sender].banned == false);
+        _;
+    }
     // Functions
     //Checks if the msg.sender is the author of an inputted book ID
     function checkIfAuthor(bytes32 bookID) public view  returns(bool){
@@ -68,7 +73,7 @@ contract Bookstore{
     }
     
     //An author adds a Book
-    function authorBook(string memory title) public {
+    function authorBook(string memory title) public isNotBanned() {
         bytes32 result = keccak256(abi.encode(msg.sender, title));
         //Require that the book doesn't already exist (unique to writer, multiple writers can have the same titles for their books)
         require(checkIfAuthor(result) ==  false);
@@ -84,7 +89,7 @@ contract Bookstore{
     }
 
     //An author adds a chapter to a specified book
-    function authorChapter(bytes32 bookID, string memory title, string memory text, uint cost) public{
+    function authorChapter(bytes32 bookID, string memory title, string memory text, uint cost)  public isNotBanned() {
         require(checkIfAuthor(bookID) == true);
         Chapter memory newChapter;
         newChapter.title = title;
@@ -97,7 +102,7 @@ contract Bookstore{
     }
 
     //A reader buys a chapter to a book
-    function buyChapter(bytes32 bookID, uint chapterID) public payable{
+    function buyChapter(bytes32 bookID, uint chapterID) public payable isNotBanned() {
         //Checks if the chapter actually exists
         Chapter memory chapter = mapOfBooks[bookID].chapters[chapterID];
         require(msg.value >= chapter.cost, "Not enough moolah");
@@ -110,14 +115,26 @@ contract Bookstore{
     }
     
     //An author decides to withdraw their balance.
-    function withdrawBalance() public payable {
+    function withdrawBalance() public {
         uint bal = accountOwnership[msg.sender].balance;
         accountOwnership[msg.sender].balance = 0;
         payable(msg.sender).transfer(bal);
     }
 
+    function makeAdmin() public isOwner() {
+        accountOwnership[msg.sender].isAdmin = true;
+    }
+    function unmakeAdmin() public isOwner(){
+        accountOwnership[msg.sender].isAdmin = false;
+    }
+    function banHammer() public isAdmin(){
+        accountOwnership[msg.sender].banned = true;
+    }
+    function unban() public isAdmin(){
+        accountOwnership[msg.sender].banned = false;
+    }
     //Getter functions
-    function getBookChapters(bytes32 bookID) public view returns(Chapter[] memory){
+    function getBookChapters(bytes32 bookID) public view returns(Chapter[] memory) {
         return mapOfBooks[bookID].chapters;
     }
 
@@ -128,9 +145,10 @@ contract Bookstore{
         return(chapter.title, chapter.text);
     }
 
-    function getBooksAuthored() public view returns (Books [] memory){
+    function getBooksAuthored() public view returns (Books [] memory) {
         bytes32 [] memory arrayOfOwnedBooks = accountOwnership[msg.sender].bookAuthorship;
         Books [] memory bookArray = new Books[](arrayOfOwnedBooks.length);
+        
         for(uint i = 0; i < arrayOfOwnedBooks.length; i++){
             bookArray[i] = (mapOfBooks[arrayOfOwnedBooks[i]]);
         }
@@ -140,6 +158,7 @@ contract Bookstore{
     function getBalance () public view returns(uint){
         return accountOwnership[msg.sender].balance;
     }
+
     //Get all of the books ever written
     function getListOfBooks() public view returns (Books[] memory){
         Books[] memory bookArray = new Books[](listOfBookIDs.length);
