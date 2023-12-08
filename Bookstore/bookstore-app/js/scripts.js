@@ -4,32 +4,51 @@
  * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
  */
 // Use this file to add JavaScript to your project
-const contractAddress = '0x7E4898673Fd4dFA9dc7d377ae42a703d11C387b4' //Update the address later
+const contractAddress = '0xf19374C82a851053a8f06381EF92DbE6a7dB2965'; //Update the address later
 const contractABI = [ { anonymous: false, inputs: [ { indexed: false, internalType: 'bytes32', name: '', type: 'bytes32' }, { indexed: false, internalType: 'string', name: '', type: 'string' }, { indexed: false, internalType: 'address', name: '', type: 'address' } ], name: 'bookCreated', type: 'event' }, { anonymous: false, inputs: [ { indexed: false, internalType: 'bytes32', name: '', type: 'bytes32' }, { indexed: false, internalType: 'uint256', name: '', type: 'uint256' }, { indexed: false, internalType: 'address', name: '', type: 'address' } ], name: 'chapterBought', type: 'event' }, { anonymous: false, inputs: [ { indexed: false, internalType: 'bytes32', name: '', type: 'bytes32' }, { indexed: false, internalType: 'uint256', name: '', type: 'uint256' }, { indexed: false, internalType: 'string', name: '', type: 'string' } ], name: 'chapterCreated', type: 'event' }, { inputs: [ { internalType: 'string', name: 'title', type: 'string' } ], name: 'authorBook', outputs: [], stateMutability: 'nonpayable', type: 'function' }, { inputs: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' }, { internalType: 'string', name: 'title', type: 'string' }, { internalType: 'string', name: 'text', type: 'string' }, { internalType: 'uint256', name: 'cost', type: 'uint256' } ], name: 'authorChapter', outputs: [], stateMutability: 'nonpayable', type: 'function' }, { inputs: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' }, { internalType: 'uint256', name: 'chapterID', type: 'uint256' } ], name: 'buyChapter', outputs: [], stateMutability: 'payable', type: 'function' }, { inputs: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' } ], name: 'checkIfAuthor', outputs: [ { internalType: 'bool', name: '', type: 'bool' } ], stateMutability: 'view', type: 'function' }, { inputs: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' }, { internalType: 'uint256', name: 'chapterID', type: 'uint256' } ], name: 'checkIfChapterOwned', outputs: [ { internalType: 'bool', name: '', type: 'bool' } ], stateMutability: 'view', type: 'function' }, { inputs: [], name: 'getBalance', outputs: [ { internalType: 'uint256', name: '', type: 'uint256' } ], stateMutability: 'view', type: 'function' }, { inputs: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' } ], name: 'getBookChapters', outputs: [ { components: [ { internalType: 'uint256', name: 'chapterID', type: 'uint256' }, { internalType: 'string', name: 'title', type: 'string' }, { internalType: 'string', name: 'text', type: 'string' }, { internalType: 'uint256', name: 'cost', type: 'uint256' } ], internalType: 'struct Bookstore.Chapter[]', name: '', type: 'tuple[]' } ], stateMutability: 'view', type: 'function' }, { inputs: [], name: 'getBooksAuthored', outputs: [ { components: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' }, { internalType: 'string', name: 'title', type: 'string' }, { components: [ { internalType: 'uint256', name: 'chapterID', type: 'uint256' }, { internalType: 'string', name: 'title', type: 'string' }, { internalType: 'string', name: 'text', type: 'string' }, { internalType: 'uint256', name: 'cost', type: 'uint256' } ], internalType: 'struct Bookstore.Chapter[]', name: 'chapters', type: 'tuple[]' }, { internalType: 'address', name: 'author', type: 'address' } ], internalType: 'struct Bookstore.Books[]', name: '', type: 'tuple[]' } ], stateMutability: 'view', type: 'function' }, { inputs: [], name: 'getListOfBooks', outputs: [ { components: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' }, { internalType: 'string', name: 'title', type: 'string' }, { components: [ { internalType: 'uint256', name: 'chapterID', type: 'uint256' }, { internalType: 'string', name: 'title', type: 'string' }, { internalType: 'string', name: 'text', type: 'string' }, { internalType: 'uint256', name: 'cost', type: 'uint256' } ], internalType: 'struct Bookstore.Chapter[]', name: 'chapters', type: 'tuple[]' }, { internalType: 'address', name: 'author', type: 'address' } ], internalType: 'struct Bookstore.Books[]', name: '', type: 'tuple[]' } ], stateMutability: 'view', type: 'function' }, { inputs: [ { internalType: 'bytes32', name: 'bookID', type: 'bytes32' }, { internalType: 'uint256', name: 'chapterID', type: 'uint256' } ], name: 'readChapter', outputs: [ { internalType: 'string', name: '', type: 'string' }, { internalType: 'string', name: '', type: 'string' } ], stateMutability: 'view', type: 'function' }, { inputs: [], name: 'withdrawBalance', outputs: [], stateMutability: 'payable', type: 'function' } ]//
-//Metamask
-//const web3 = new Web3(window.ethereum);
-//const counter = new web3.eth.Contract(counterABI, counterAddress);
-//counter.setProvider(window.ethereum);
-//Ganache
-const web3 = new Web3('http://localhost:7545')
-const contract = new web3.eth.Contract(contractABI, contractAddress)
 
+
+//Metamask
+const web3 = new Web3(window.ethereum);
+const contract = new web3.eth.Contract(contractABI, contractAddress);
+contract.setProvider(window.ethereum);
+// Ganache
+// const web3 = new Web3('http://localhost:7545')
+// const contract = new web3.eth.Contract(contractABI, contractAddress)
 //
 const writingRow = document.getElementById('writingBooks')
 const recentRow = document.getElementById('recentBooks')
 
 const addNewBook = document.getElementById('authorBook')
 const addChapter = document.getElementById('weird')
+const logInButton = document.getElementById('login')
 
 
+async function collectBalance(){
+	const accounts = await web3.eth.getAccounts();
+	await contract.methods.withdrawBalance().send({from: accounts[0]})
+	//location.reload()
+	// const value = await contract.methods.getBalance().call({ from: accounts[0] })
+	// logInButton.innerHTML = '<p> Balance: ' + value + '</p>';	
+}
 
 
 //Runs on load
 window.addEventListener('load', async event => {
+	//Logs you into metamask
+	if(typeof window.ethereum !== 'undefined'){
+        await ethereum.request({method: 'eth_requestAccounts'});
+		const accounts = await web3.eth.getAccounts();
+		const value = await contract.methods.getBalance().call({from: accounts[0]})
+		logInButton.innerHTML = '<p> Balance: ' + value + '</p>';
+    }
+    else{
+        alert("Metamask is not available...Please install it to continue");
+    }
 	//Updates the recent row
-	if (writingRow != null) {
-		const value = await getAllBooks()
-		var counter = 0
+		value = await getAllBooks();
+		var counter = 0;
+		console.log(value);	
 		for (const key in value) {
 			var bookName = value[key]['title']
 			var author = value[key]['author']
@@ -49,7 +68,8 @@ window.addEventListener('load', async event => {
 			}
 		}
 		//Updates the Books you're writing row
-		const value1 = await getBooksAuthored()
+		value = await getBooksAuthored();
+		console.log(value);	
 		for (const key in value) {
 			var bookName = value[key]['title']
 			var author = value[key]['author']
@@ -69,16 +89,19 @@ window.addEventListener('load', async event => {
 			writingRow.appendChild(tempCard)
 			writingRow.innerHTML = writingRow.innerHTML + temp
 		}
-	}
 })
 
 async function getBooksAuthored() {
-	const value = await contract.methods.getBooksAuthored().call()
+	const accounts = await web3.eth.getAccounts();
+
+	const value = await contract.methods.getBooksAuthored().call({ from: accounts[0] })
 	return value
 }
 
 async function getAllBooks() {
-	const value = await contract.methods.getListOfBooks().call()
+	const accounts = await web3.eth.getAccounts();
+
+	const value = await contract.methods.getListOfBooks().call({ from: accounts[0] })
 	return value
 }
 
@@ -127,14 +150,16 @@ async function populateReadChapter(x) {
 	const value = await getAllChaptersOfABook(x)
 	for (const key in value) {
 		chapterNumber = value[key]['chapterID']
-		owned = await chapterOwned(x, 0)
+		
+		owned = await chapterOwned(x, chapterNumber)
+		console.log(chapterNumber+" " +owned);
 		cost = value[key]['cost']
 		read = 'Read'
 		clickVar = ''
 		if (!owned && cost > 0) {
 			btnClass = 'btn-danger'
 			read = 'Buy'
-			clickVar = 'buyAChapter(' + x + ',' + chapterNumber + ')'
+			clickVar = 'buyAChapter(\'' + x + '\',' + chapterNumber + ',' + cost + ')'
 		} else {
 			btnClass = 'btn-info'
 			cost = 'Free / Already Owned'
@@ -148,7 +173,9 @@ async function populateReadChapter(x) {
 }
 
 async function getAllChaptersOfABook(x) {
-	const value = await contract.methods.getBookChapters(x).call()
+	const accounts = await web3.eth.getAccounts();
+
+	const value = await contract.methods.getBookChapters(x).call({ from: accounts[0] })
 	return value
 }
 
@@ -159,11 +186,12 @@ async function getSpecificChapterText(x, y) {
 	alertAppend.innerHTML = '<div class="alert alert-dark alert-dismissible" role="alert"> <h4 class="alert-heading">'+value[0]+'</h4> <hr> <div>'+value[1]+'</div> <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">X</button> </div> ';
 }
 
-async function buyAChapter(x, y) {
+async function buyAChapter(x, y, z) {
+
 	const accounts = await web3.eth.getAccounts()
 	await contract.methods
 		.buyChapter(x, y)
-		.send({ from: accounts[0], gas: '1000000' })
+		.send({ from: accounts[0], gas: '1000000', value:z })
 	location.reload()
 }
 
